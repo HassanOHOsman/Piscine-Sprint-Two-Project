@@ -13,4 +13,9 @@ window.onload = function() {
     const rootContainer = document.createElement("div");
     rootContainer.id = "root-container";
     document.body.append(rootContainer);
+
+    //Create a container to hold the calendar and its content
+    const calendarContainer = document.createElement("div");
+    calendarContainer.id = "calendar-container";
+    rootContainer.append(calendarContainer)
 }

@@ -31,6 +31,9 @@ window.onload = function() {
         const weekday = document.createElement("div");
         weekday.textContent = day;
         weekdaysContainer.append(weekday);
+
+        weekday.style.height = "40px";
+        weekday.style.width = "50px"
     })
 
     //Turn the weekdays container into grids of 7 column

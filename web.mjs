@@ -19,7 +19,10 @@ window.onload = function() {
     calendarContainer.id = "calendar-container";
     rootContainer.append(calendarContainer)
 
-   
+    //Create container to wrap up weekdays (Mon through Sun)
+    const weekdaysContainer = document.createElement("div");
+    weekdaysContainer.id = "weekdays-container";
+    calendarContainer.append(weekdaysContainer);
 
     //Create weekdays starting from Mon
     const weekdays = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
@@ -27,11 +30,11 @@ window.onload = function() {
     weekdays.forEach((day) => {
         const weekday = document.createElement("div");
         weekday.textContent = day;
-        calendarContainer.append(weekday);
+        weekdaysContainer.append(weekday);
     })
 
     //Change the orientation of the weekdays to horizontal
-    calendarContainer.style.display = "flex"
+    weekdaysContainer.style.display = "flex"
 
     //Create container to hold the dates/rectangular girds
     const datesContainer = document.createElement("div");

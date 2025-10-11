@@ -38,4 +38,12 @@ window.onload = function() {
     datesContainer.id = "dates-container";
     calendarContainer.append(datesContainer);
 
+    //Create individual grids through looping
+    for (let i = 1; i <= 30; i++) {
+        const date = document.createElement("div");
+        date.textContent = i;
+        datesContainer.append(date);
+    }
+
+
 }

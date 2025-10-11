@@ -33,4 +33,9 @@ window.onload = function() {
     //Change the orientation of the weekdays to horizontal
     calendarContainer.style.display = "flex"
 
+    //Create container to hold the dates/rectangular girds
+    const datesContainer = document.createElement("div");
+    datesContainer.id = "dates-container";
+    calendarContainer.append(datesContainer);
+
 }

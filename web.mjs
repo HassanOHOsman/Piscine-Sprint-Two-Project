@@ -9,7 +9,7 @@ import daysData from "./days.json" with { type: "json" };
 window.onload = function() {
     document.querySelector("body").innerText = `${getGreeting()} - there are ${daysData.length} known days`;
 
-    //Create the root container for the calendar
+    //Create the root container to hold the entire page content
     const rootContainer = document.createElement("div");
     rootContainer.id = "root-container";
     document.body.append(rootContainer);

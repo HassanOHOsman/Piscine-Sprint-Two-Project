@@ -33,8 +33,9 @@ window.onload = function() {
         weekdaysContainer.append(weekday);
     })
 
-    //Change the orientation of the weekdays to horizontal
-    weekdaysContainer.style.display = "flex"
+    //Turn the weekdays container into grids of 7 column
+    weekdaysContainer.style.display = "grid";
+    weekdaysContainer.style.gridTemplateColumns = "repeat(7, 1fr)";
 
     //Create container to hold the dates/rectangular girds
     const datesContainer = document.createElement("div");

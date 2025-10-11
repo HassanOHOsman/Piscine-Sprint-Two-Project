@@ -51,6 +51,9 @@ window.onload = function() {
         const date = document.createElement("div");
         date.textContent = i;
         datesContainer.append(date);
+
+        date.style.height = "40px";
+        date.style.width = "50px"
     }
 
 

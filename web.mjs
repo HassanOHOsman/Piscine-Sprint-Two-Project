@@ -32,8 +32,8 @@ window.onload = function() {
         weekday.textContent = day;
         weekdaysContainer.append(weekday);
 
-        weekday.style.height = "40px";
-        weekday.style.width = "50px"
+        // weekday.style.height = "40px";
+        // weekday.style.width = "50px"
     })
 
     //Turn the weekdays container into grids of 7 column
@@ -56,8 +56,11 @@ window.onload = function() {
         date.textContent = i;
         datesContainer.append(date);
 
-        date.style.height = "40px";
-        date.style.width = "50px"
+        //Make the outlide of each cell a vidible rectangle
+        date.style.border = "1px solid black"
+
+        // date.style.height = "40px";
+        // date.style.width = "50px"
     }
 
 

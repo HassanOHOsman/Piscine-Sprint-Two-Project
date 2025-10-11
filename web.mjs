@@ -41,9 +41,9 @@ window.onload = function() {
     datesContainer.id = "dates-container";
     calendarContainer.append(datesContainer);
 
-    //Display grids horizontally
-    datesContainer.style.display = "flex";
-    datesContainer.style.flexWrap = "wrap";
+    //Turn the container for dates into grids of 7 column
+    datesContainer.style.display = "grid";
+    datesContainer.style.gridTemplateColumns = "repeat(7, 1fr)";
 
 
     //Create individual grids through looping

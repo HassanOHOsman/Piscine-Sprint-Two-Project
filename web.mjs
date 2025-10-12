@@ -51,12 +51,8 @@ window.onload = function() {
 
 
     //Create dynamic calendar where the number of days in a month vary
-    const today = new Date();
-    const month = today.getMonth();
-    const year = today.getFullYear();
-    const firstDayInMonth = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0);
-  
+
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
 
     //Make the outlide of each cell a vidible rectangle
     // date.style.border = "1px solid black"

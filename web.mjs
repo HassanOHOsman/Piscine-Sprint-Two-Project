@@ -3,12 +3,12 @@
 // Note that when running locally, in order to open a web page which uses modules, you must serve the directory over HTTP e.g. with https://www.npmjs.com/package/http-server
 // You can't open the index.html file using a file:// URL.
 
-import { getGreeting } from "./common.mjs";
+
+import { createDropdown } from "./dropdown.mjs";
 import daysData from "./days.json" with { type: "json" };
 
 window.onload = function() {
-    document.querySelector("body").innerText = `${getGreeting()} - there are ${daysData.length} known days`;
-
+    
     //Create the root container to hold the entire page content
     const rootContainer = document.createElement("div");
     rootContainer.id = "root-container";
@@ -72,8 +72,6 @@ window.onload = function() {
             emptyCell1.style.border = "1px solid black"
         }
 
-
-
         //Loop through each day of the month
         for (let i = 1; i <= daysInMonth; i++) {
             const date = document.createElement("div");
@@ -96,6 +94,10 @@ window.onload = function() {
 
         }
     }
+
+    //Create the dropdown functionality
+    createDropdown(rootContainer, datesContainer, calendarBuilder);
+
     //Show current calendar - current year and current month
     calendarBuilder(year,month)
 

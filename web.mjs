@@ -64,6 +64,9 @@ window.onload = function() {
     for (let i = 0; i < firstDayInMonth; i++) {
         const emptyCell = document.createElement("div");
         datesContainer.append(emptyCell)
+
+        //make outline for each empty cell a visible rectangle
+        emptyCell.style.border = "1px solid black"
     }
 
     //Loop through each day of the month
@@ -72,7 +75,7 @@ window.onload = function() {
         date.textContent = i;
         datesContainer.append(date);
 
-    //Make the outlide of each cell a vidible rectangle
+    //Make the outline of each cell a vidible rectangle
     date.style.border = "1px solid black"
 
 

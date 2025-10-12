@@ -50,18 +50,21 @@ window.onload = function() {
     datesContainer.style.gridTemplateColumns = "repeat(7, 1fr)";
 
 
-    //Create individual grids through looping
-    for (let i = 1; i <= 30; i++) {
-        const date = document.createElement("div");
-        date.textContent = i;
-        datesContainer.append(date);
+    //Create dynamic calendar where the number of days in a month vary
+    const today = new Date();
+    const month = today.getMonth();
+    const year = today.getFullYear();
+    const firstDayInMonth = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0);
+  
 
-        //Make the outlide of each cell a vidible rectangle
-        date.style.border = "1px solid black"
+    //Make the outlide of each cell a vidible rectangle
+    // date.style.border = "1px solid black"
 
-        // date.style.height = "40px";
-        // date.style.width = "50px"
+    // date.style.height = "40px";
+    // date.style.width = "50px"
+
     }
 
 
-}
+

@@ -59,7 +59,7 @@ window.onload = function() {
 
     const firstDayInMonth = new Date(year, month, 1).getDay();
 
-    for (let i = 1; i < daysInMonth; i++) {
+    for (let i = 1; i <= daysInMonth; i++) {
         const date = document.createElement("div");
         date.textContent = i;
         datesContainer.append(date);

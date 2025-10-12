@@ -96,9 +96,14 @@ window.onload = function() {
     }
 
     //create previous button to take the user to the previous month of the particular year
-    const previousbtn = document.createElement("button");
-    previousbtn.textContent = "Previous";
-    calendarContainer.append(previousbtn)
+    const previousBtn = document.createElement("button");
+    previousBtn.textContent = "Previous";
+    calendarContainer.append(previousBtn);
+
+    //create next button to take the user to the following month of the particular year
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "Next";
+    calendarContainer.append(nextBtn);
 
     //Create the dropdown functionality
     createDropdown(rootContainer, datesContainer, calendarBuilder);

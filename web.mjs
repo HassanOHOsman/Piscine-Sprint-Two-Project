@@ -60,6 +60,12 @@ window.onload = function() {
     //Make Monday start of the weekdays by modifying the indexes for days
     firstDayInMonth = (firstDayInMonth + 6) % 7;
 
+    //align first day of month to the exact weekday it falls into
+    for (let i = 0; i < firstDayInMonth; i++) {
+        const emptyCell = document.createElement("div");
+        datesContainer.append(emptyCell)
+    }
+
     //Loop through each day of the month
     for (let i = 1; i <= daysInMonth; i++) {
         const date = document.createElement("div");
@@ -69,11 +75,7 @@ window.onload = function() {
     //Make the outlide of each cell a vidible rectangle
     date.style.border = "1px solid black"
 
-    //align first day of month to the exact weekday it falls into
-    for (let i = 0; i < firstDayInMonth; i++) {
-        const emptyCell = document.createElement("div");
-        datesContainer.append(emptyCell)
-    }
+
 
     }
 

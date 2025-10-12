@@ -32,8 +32,6 @@ window.onload = function() {
         weekday.textContent = day;
         weekdaysContainer.append(weekday);
 
-        // weekday.style.height = "40px";
-        // weekday.style.width = "50px"
     })
 
     //Turn the weekdays container into grids of 7 column
@@ -50,18 +48,58 @@ window.onload = function() {
     datesContainer.style.gridTemplateColumns = "repeat(7, 1fr)";
 
 
-    //Create individual grids through looping
-    for (let i = 1; i <= 30; i++) {
-        const date = document.createElement("div");
-        date.textContent = i;
-        datesContainer.append(date);
+    //Create dynamic calendar where the number of days in a month vary
+    const today = new Date();
+    const month = today.getMonth();
+    const year = today.getFullYear();
 
-        //Make the outlide of each cell a vidible rectangle
-        date.style.border = "1px solid black"
+    //Create a function to render a calendar as years and months change
+    function calendarBuilder(year, month) {
 
-        // date.style.height = "40px";
-        // date.style.width = "50px"
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        let firstDayInMonth = new Date(year, month, 1).getDay();
+        
+        //Make Monday start of the weekdays by modifying the indexes for days
+        firstDayInMonth = (firstDayInMonth + 6) % 7;
+
+        //align first day of month to the exact weekday it falls into
+        for (let i = 0; i < firstDayInMonth; i++) {
+            const emptyCell1 = document.createElement("div");
+            datesContainer.append(emptyCell1)
+
+            //Outline for each empty cell a visible rectangle
+            emptyCell1.style.border = "1px solid black"
+        }
+
+
+
+        //Loop through each day of the month
+        for (let i = 1; i <= daysInMonth; i++) {
+            const date = document.createElement("div");
+            date.textContent = i;
+            datesContainer.append(date);
+
+            //Make the outline of each cell a vidible rectangle
+            date.style.border = "1px solid black"
+        }
+
+        //Outline the empty gills into visible rectangle once a month ends
+        const totalRectangles = firstDayInMonth +daysInMonth;
+        
+        const emptyCells2 = (7 - (totalRectangles % 7)) % 7;
+
+        for (let i = 0; i < emptyCells2; i++) {
+            const emptyCell2 = document.createElement("div");
+            datesContainer.append(emptyCell2);
+            emptyCell2.style.border = "1px solid black"
+
+        }
     }
-
+    //Show current calendar - current year and current month
+    calendarBuilder(year,month)
 
 }
+
+
+

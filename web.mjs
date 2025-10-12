@@ -96,8 +96,8 @@ window.onload = function() {
 
         }
     }
-    //testing the calendar function
-    calendarBuilder(2025,9)
+    //Show current calendar - current year and current month
+    calendarBuilder(year,month)
 
 }
 

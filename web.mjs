@@ -62,12 +62,14 @@ window.onload = function() {
 
     //align first day of month to the exact weekday it falls into
     for (let i = 0; i < firstDayInMonth; i++) {
-        const emptyCell = document.createElement("div");
-        datesContainer.append(emptyCell)
+        const emptyCell1 = document.createElement("div");
+        datesContainer.append(emptyCell1)
 
-        //make outline for each empty cell a visible rectangle
-        emptyCell.style.border = "1px solid black"
+        //Outline for each empty cell a visible rectangle
+        emptyCell1.style.border = "1px solid black"
     }
+
+
 
     //Loop through each day of the month
     for (let i = 1; i <= daysInMonth; i++) {
@@ -75,15 +77,22 @@ window.onload = function() {
         date.textContent = i;
         datesContainer.append(date);
 
-    //Make the outline of each cell a vidible rectangle
-    date.style.border = "1px solid black"
-
-
-
+        //Make the outline of each cell a vidible rectangle
+        date.style.border = "1px solid black"
     }
 
+    //Outline the empty gills into visible rectangle once a month ends
+    const totalRectangles = firstDayInMonth +daysInMonth;
+    
+    const emptyCells2 = (7 - (totalRectangles % 7)) % 7;
 
+    for (let i = 0; i < emptyCells2; i++) {
+        const emptyCell2 = document.createElement("div");
+        datesContainer.append(emptyCell2);
+        emptyCell2.style.border = "1px solid black"
 
+    }
+     
     
 
     }

@@ -57,6 +57,7 @@ window.onload = function() {
 
     const firstDayInMonth = new Date(year, month, 1).getDay();
 
+    //Loop through each day of the month
     for (let i = 1; i <= daysInMonth; i++) {
         const date = document.createElement("div");
         date.textContent = i;

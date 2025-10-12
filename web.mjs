@@ -55,7 +55,10 @@ window.onload = function() {
 
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    const firstDayInMonth = new Date(year, month, 1).getDay();
+    let firstDayInMonth = new Date(year, month, 1).getDay();
+    
+    //Make Monday start of the weekdays by modifying the indexes for days
+    firstDayInMonth = (firstDayInMonth + 6) % 7;
 
     //Loop through each day of the month
     for (let i = 1; i <= daysInMonth; i++) {
@@ -63,8 +66,14 @@ window.onload = function() {
         date.textContent = i;
         datesContainer.append(date);
 
-        //Make the outlide of each cell a vidible rectangle
-        date.style.border = "1px solid black"
+    //Make the outlide of each cell a vidible rectangle
+    date.style.border = "1px solid black"
+
+    //align first day of month to the exact weekday it falls into
+    for (let i = 0; i < firstDayInMonth; i++) {
+        const emptyCell = document.createElement("div");
+        weekdaysContainer.append(emptyCell)
+    }
 
     }
 

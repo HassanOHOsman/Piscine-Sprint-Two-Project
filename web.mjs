@@ -72,7 +72,7 @@ window.onload = function() {
     //align first day of month to the exact weekday it falls into
     for (let i = 0; i < firstDayInMonth; i++) {
         const emptyCell = document.createElement("div");
-        weekdaysContainer.append(emptyCell)
+        datesContainer.append(emptyCell)
     }
 
     }

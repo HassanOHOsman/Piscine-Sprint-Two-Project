@@ -1,0 +1,39 @@
+code for the dropdown to be used in the web.mjs file:
+
+// Create a container for the dropdown
+
+  const dropdownContainer = document.createElement("div");
+  dropdownContainer.id = "dropdown-container";
+  rootContainer.append(dropdownContainer);
+
+// Define the current date and month names
+
+  const today = new Date();
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  // Function to generate the dropdown HTML
+
+  const generateDropdownHTML = (date, monthNames) => `
+    <div id="month-dropdown">
+      <label for="month-select">Month:</label>
+      <select id="month-select">
+        ${monthNames
+          .map((month, index) => `<option value="${index}" ${index === date.getMonth() ? "selected" : ""}>${month}</option>`)
+          .join("")}
+      </select>
+      <label for="year-select">Year:</label>
+      <select id="year-select">
+        ${Array.from({ length: 2100 - 1900 + 1 }, (_, i) => 1900 + i)
+          .map(year => `<option value="${year}" ${year === date.getFullYear() ? "selected" : ""}>${year}</option>`)
+          .join("")}
+      </select>
+      <button id="jump-button">Go</button>
+    </div>
+  `;
+
+  // Render the dropdown inside the dropdown container
+
+  dropdownContainer.innerHTML = generateDropdownHTML(today, monthNames);

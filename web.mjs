@@ -14,6 +14,11 @@ window.onload = function() {
     rootContainer.id = "root-container";
     document.body.append(rootContainer);
 
+    //Create heading to display the current/selected month and year 
+    const calendarHeading = document.createElement("h2");
+    rootContainer.append(calendarHeading);
+
+
     //Create a container to hold the calendar and its content
     const calendarContainer = document.createElement("div");
     calendarContainer.id = "calendar-container";
@@ -52,6 +57,9 @@ window.onload = function() {
     const today = new Date();
     let month = today.getMonth();
     let year = today.getFullYear();
+
+    //Display the month and yar of the calendar as per current selection
+    calendarHeading.textContent = `${today.toLocaleString("default", {month: "long"})} ${year}`
 
     //Create a function to render a calendar as years and months change
     function calendarBuilder(year, month) {

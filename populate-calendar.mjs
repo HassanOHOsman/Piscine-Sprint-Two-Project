@@ -1,4 +1,4 @@
-//Cache to avoid fetching the calendar events multiple times
+//Cache to avoid fetching the calendar events multiple times and reduce network requests
 let data = null;
 
 const monthNames = [
@@ -15,8 +15,6 @@ async function loadDays() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
     data = await response.json();
-
-    console.log(data);
     } catch (error) {
         console.error("Failed to load days.json:", error);
     }
@@ -31,7 +29,6 @@ function getMonthIndex(monthName) {
 
 //Match an event occurrence to the corresponding calendar date for a month and year.
 function getEventDate(year, monthName, dayName, occurrence) {
-    console.log(`Calculating event date for: year=${year}, monthName=${monthName}, dayName=${dayName}, occurrence=${occurrence}`);
     // Convert the month name to index
     const monthIndex = getMonthIndex(monthName); 
 
@@ -44,7 +41,7 @@ function getEventDate(year, monthName, dayName, occurrence) {
     let dates = []
 
     for (let day = 1; day <= daysInMonth; day++) {
-        // FInd the matching day
+        // Find the matching day
         const date = new Date(year, monthIndex, day);
         if (date.getDay() === dayIndex) {
             // Push the dates taht match the day name to the dates array
@@ -53,7 +50,6 @@ function getEventDate(year, monthName, dayName, occurrence) {
 
     }
 
-    console.log(`Matching dates: ${dates}`);
     // Handle the special case of last occurrence
     if (occurrence === "last") {
         return dates[dates.length - 1];

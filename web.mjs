@@ -126,6 +126,8 @@ window.onload = function() {
     //Add event listener to take user to the following month when "Next" button is clicked
     nextBtn.addEventListener("click", () => {
         datesContainer.innerHTML = "";
+        month = month + 1;
+    
     })
 
 }

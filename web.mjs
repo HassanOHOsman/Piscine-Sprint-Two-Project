@@ -119,7 +119,7 @@ window.onload = function() {
             month = 11;
             year = year - 1
         }
-        calendarBuilder(year, month)
+        calendarBuilder(year, month);
     });
 
 
@@ -131,7 +131,7 @@ window.onload = function() {
             month = 0;
             year = year + 1;
         }
-        calendarBuilder(year, month)
+        calendarBuilder(year, month);
     });
 
 }

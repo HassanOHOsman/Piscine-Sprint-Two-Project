@@ -40,7 +40,7 @@ function getEventDate(year, monthName, dayName, occurrence) {
     const monthIndex = getMonthIndex(monthName); 
 
     // Get the total days in the month
-    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate
+    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
 
     const dayIndex = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(dayName);
 
@@ -57,5 +57,34 @@ function getEventDate(year, monthName, dayName, occurrence) {
 
     }
 
-
+    // Handle the special case of last occurrence
+    if (occurrence === "last") {
+        return dates[dates.length - 1];
+    } else {
+        // Get a specific occurrence
+        const occurrenceMap = { "first": 0, "second": 1, "third": 2, "fourth": 3 };
+        return dates[occurrenceMap[occurrence]]; 
+    }
+    
 }
+
+async function processEventsForCalendar(year) {
+    // Make sure the data is loaded
+    if (!data) {
+        await loadDays();
+    }
+
+    //An array to store the vents with their calculated dates
+    const eventsWithDates = data.map(event => {
+        const eventDate = getEventDate(year, event.monthName, event.dayName, event.occurrence);
+        return {
+            // Copy all the the original event properties using spread operator into the new object
+            ...event, 
+            // Add teh new calculated date value to the new date property also
+            date: eventDate
+        };
+    });
+
+    return eventsWithDates
+}
+    

@@ -50,8 +50,8 @@ window.onload = function() {
 
     //Create dynamic calendar where the number of days in a month vary
     const today = new Date();
-    const month = today.getMonth();
-    const year = today.getFullYear();
+    let month = today.getMonth();
+    let year = today.getFullYear();
 
     //Create a function to render a calendar as years and months change
     function calendarBuilder(year, month) {

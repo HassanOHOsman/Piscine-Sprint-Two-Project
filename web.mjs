@@ -111,7 +111,7 @@ window.onload = function() {
     //Show current calendar - current year and current month
     calendarBuilder(year,month)
 
-    //Add event listener to take user to the previous month when "Previous" button clicked
+    //Add event listener to take user to the previous month when "Previous" button is clicked
     previousBtn.addEventListener("click", () => {
         datesContainer.innerHTML = "";
         month = month - 1;
@@ -121,6 +121,12 @@ window.onload = function() {
         }
         calendarBuilder(year, month)
     });
+
+
+    //Add event listener to take user to the following month when "Next" button is clicked
+    nextBtn.addEventListener("click", () => {
+        datesContainer.innerHTML = "";
+    })
 
 }
 

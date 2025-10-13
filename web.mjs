@@ -114,8 +114,12 @@ window.onload = function() {
     //Add event listener to take user to the previous month when "Previous" button clicked
     previousBtn.addEventListener("click", () => {
         datesContainer.innerHTML = "";
-        
-    })
+        let currentMonth = month - 1;
+        if (currentMonth < 0) {
+            month = 11;
+        }
+        let currentYear = year - 1;
+    });
 
 }
 

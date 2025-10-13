@@ -129,6 +129,14 @@ window.onload = function() {
         }
         calendarBuilder(year, month);
         calendarHeading.textContent = `${new Date(year, month).toLocaleString("default", {month: "long"})} ${year}`;
+
+         //Sync month selector to reflect the correct month when user clicks "Previous"
+        const monthNavSync = document.getElementById("month-select");
+        monthNavSync.value = month;
+
+        //Sync year selector to reflect the correct year when user clicks "Previous"
+        const yearNavSync = document.getElementById("year-select");
+        yearNavSync.value = year;
     });
 
 
@@ -142,9 +150,15 @@ window.onload = function() {
         }
         calendarBuilder(year, month);
         calendarHeading.textContent = `${new Date(year, month).toLocaleString("default", {month: "long"})} ${year}`;
+
+        //Sync month selector to reflect the correct month when user clicks "Next"
+        const monthNavSync = document.getElementById("month-select");
+        monthNavSync.value = month;
+
+        //Sync year selector to reflect the correct year when user clicks "Next"
+        const yearNavSync = document.getElementById("year-select");
+        yearNavSync.value = year;
+
     });
 
 }
-
-
-

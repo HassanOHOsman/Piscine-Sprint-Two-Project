@@ -141,6 +141,7 @@ window.onload = function() {
             year = year + 1;
         }
         calendarBuilder(year, month);
+        calendarHeading.textContent = `${new Date(year, month).toLocaleString("default", {month: "long"})} ${year}`;
     });
 
 }

@@ -50,8 +50,8 @@ window.onload = function() {
 
     //Create dynamic calendar where the number of days in a month vary
     const today = new Date();
-    const month = today.getMonth();
-    const year = today.getFullYear();
+    let month = today.getMonth();
+    let year = today.getFullYear();
 
     //Create a function to render a calendar as years and months change
     function calendarBuilder(year, month) {
@@ -95,11 +95,44 @@ window.onload = function() {
         }
     }
 
+    //create previous button to take the user to the previous month of the particular year
+    const previousBtn = document.createElement("button");
+    previousBtn.textContent = "Previous";
+    calendarContainer.append(previousBtn);
+
+    //create next button to take the user to the following month of the particular year
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "Next";
+    calendarContainer.append(nextBtn);
+
     //Create the dropdown functionality
     createDropdown(rootContainer, datesContainer, calendarBuilder);
 
     //Show current calendar - current year and current month
     calendarBuilder(year,month)
+
+    //Add event listener to take user to the previous month when "Previous" button is clicked
+    previousBtn.addEventListener("click", () => {
+        datesContainer.innerHTML = "";
+        month = month - 1;
+        if (month < 0) {
+            month = 11;
+            year = year - 1
+        }
+        calendarBuilder(year, month);
+    });
+
+
+    //Add event listener to take user to the following month when "Next" button is clicked
+    nextBtn.addEventListener("click", () => {
+        datesContainer.innerHTML = "";
+        month = month + 1;
+        if (month > 11) {
+            month = 0;
+            year = year + 1;
+        }
+        calendarBuilder(year, month);
+    });
 
 }
 

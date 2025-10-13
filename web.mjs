@@ -19,6 +19,11 @@ window.onload = function() {
     calendarContainer.id = "calendar-container";
     rootContainer.append(calendarContainer)
 
+    //Create heading to display the current/selected month and year 
+    const calendarHeading = document.createElement("h2");
+    calendarContainer.append(calendarHeading);
+
+
     //Create container to wrap up weekdays (Mon through Sun)
     const weekdaysContainer = document.createElement("div");
     weekdaysContainer.id = "weekdays-container";
@@ -52,6 +57,9 @@ window.onload = function() {
     const today = new Date();
     let month = today.getMonth();
     let year = today.getFullYear();
+
+    //Display the month and yar of the calendar as per current selection
+    calendarHeading.textContent = `${today.toLocaleString("default", {month: "long"})} ${year}`;
 
     //Create a function to render a calendar as years and months change
     function calendarBuilder(year, month) {
@@ -120,6 +128,7 @@ window.onload = function() {
             year = year - 1
         }
         calendarBuilder(year, month);
+        calendarHeading.textContent = `${new Date(year, month).toLocaleString("default", {month: "long"})} ${year}`;
     });
 
 
@@ -132,6 +141,7 @@ window.onload = function() {
             year = year + 1;
         }
         calendarBuilder(year, month);
+        calendarHeading.textContent = `${new Date(year, month).toLocaleString("default", {month: "long"})} ${year}`;
     });
 
 }

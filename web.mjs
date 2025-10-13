@@ -161,4 +161,20 @@ window.onload = function() {
 
     });
 
+    //Syn the calendar heading to reflect the correct month and year as the user clicks the jump button
+    const monthMenu = document.getElementById("month-select");
+    const yearhMenu = document.getElementById("year-select");
+    const jumpbtn = document.getElementById("jump-button");
+
+    jumpbtn.addEventListener("click", () => {
+        datesContainer.innerHTML = "";
+        year = Number(yearhMenu.value);
+        month = Number(monthMenu.value);
+        calendarBuilder(year, month);
+        calendarHeading.textContent = `${new Date(year, month).toLocaleString("default", {month: "long"})} ${year}`;
+
+
+    })
+
+
 }

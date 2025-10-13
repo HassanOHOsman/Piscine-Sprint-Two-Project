@@ -29,13 +29,9 @@ function getMonthIndex(monthName) {
     return monthNames.indexOf(monthName);
 }
 
-// Filter the month name from the JSON data for the events using the monthName field
-function filterEventsForMonth(events, month) {
-    return events.filter(event => event.monthName === month);
-}
-
 //Match an event occurrence to the corresponding calendar date for a month and year.
 function getEventDate(year, monthName, dayName, occurrence) {
+    console.log(`Calculating event date for: year=${year}, monthName=${monthName}, dayName=${dayName}, occurrence=${occurrence}`);
     // Convert the month name to index
     const monthIndex = getMonthIndex(monthName); 
 
@@ -57,6 +53,7 @@ function getEventDate(year, monthName, dayName, occurrence) {
 
     }
 
+    console.log(`Matching dates: ${dates}`);
     // Handle the special case of last occurrence
     if (occurrence === "last") {
         return dates[dates.length - 1];
@@ -68,7 +65,8 @@ function getEventDate(year, monthName, dayName, occurrence) {
     
 }
 
-async function processEventsForCalendar(year) {
+// Get all the events and return them with their new calculated dates
+export async function processEventsForCalendar(year) {
     // Make sure the data is loaded
     if (!data) {
         await loadDays();
@@ -87,4 +85,3 @@ async function processEventsForCalendar(year) {
 
     return eventsWithDates
 }
-    

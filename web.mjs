@@ -5,6 +5,8 @@
 
 import { createDropdown } from "./dropdown.mjs";
 import { processEventsForCalendar } from "../populate-calendar.mjs";
+import { getDaysInMonth } from "./common.mjs";
+
 
 window.onload = function () {
   //Create the root container to hold the entire page content
@@ -78,7 +80,7 @@ window.onload = function () {
       "December",
     ];
 
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInMonth = getDaysInMonth(year, month);
 
     let firstDayInMonth = new Date(year, month, 1).getDay();
 

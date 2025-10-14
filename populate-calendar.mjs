@@ -42,7 +42,7 @@ function getMonthIndex(monthName) {
 }
 
 // Match an event occurrence to the corresponding calendar date for a month and year.
-function getEventDate(year, monthName, dayName, occurrence) {
+export function getEventDate(year, monthName, dayName, occurrence) {
   // Convert the month name to index
   const monthIndex = getMonthIndex(monthName);
 

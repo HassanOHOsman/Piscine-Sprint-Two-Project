@@ -3,202 +3,212 @@
 // Note that when running locally, in order to open a web page which uses modules, you must serve the directory over HTTP e.g. with https://www.npmjs.com/package/http-server
 // You can't open the index.html file using a file:// URL.
 
-
 import { createDropdown } from "./dropdown.mjs";
 import { processEventsForCalendar } from "../populate-calendar.mjs";
 
-window.onload = function() {
+window.onload = function () {
+  //Create the root container to hold the entire page content
+  const rootContainer = document.createElement("div");
+  rootContainer.id = "root-container";
+  document.body.append(rootContainer);
 
-    //Create the root container to hold the entire page content
-    const rootContainer = document.createElement("div");
-    rootContainer.id = "root-container";
-    document.body.append(rootContainer);
+  //Create a container to hold the calendar and its content
+  const calendarContainer = document.createElement("div");
+  calendarContainer.id = "calendar-container";
+  rootContainer.append(calendarContainer);
 
-    //Create a container to hold the calendar and its content
-    const calendarContainer = document.createElement("div");
-    calendarContainer.id = "calendar-container";
-    rootContainer.append(calendarContainer)
+  //Create heading to display the current/selected month and year
+  const calendarHeading = document.createElement("h2");
+  calendarContainer.append(calendarHeading);
 
-    //Create heading to display the current/selected month and year 
-    const calendarHeading = document.createElement("h2");
-    calendarContainer.append(calendarHeading);
+  //Create container to wrap up weekdays (Mon through Sun)
+  const weekdaysContainer = document.createElement("div");
+  weekdaysContainer.id = "weekdays-container";
+  calendarContainer.append(weekdaysContainer);
 
+  //Create weekdays starting from Mon
+  const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-    //Create container to wrap up weekdays (Mon through Sun)
-    const weekdaysContainer = document.createElement("div");
-    weekdaysContainer.id = "weekdays-container";
-    calendarContainer.append(weekdaysContainer);
+  weekdays.forEach((day) => {
+    const weekday = document.createElement("div");
+    weekday.textContent = day;
+    weekdaysContainer.append(weekday);
+  });
 
-    //Create weekdays starting from Mon
-    const weekdays = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  //Turn the weekdays container into grids of 7 column
+  weekdaysContainer.style.display = "grid";
+  weekdaysContainer.style.gridTemplateColumns = "repeat(7, 1fr)";
 
-    weekdays.forEach((day) => {
-        const weekday = document.createElement("div");
-        weekday.textContent = day;
-        weekdaysContainer.append(weekday);
+  //Create container to hold the dates/rectangular girds
+  const datesContainer = document.createElement("div");
+  datesContainer.id = "dates-container";
+  calendarContainer.append(datesContainer);
 
-    })
+  //Turn the container for dates into grids of 7 column
+  datesContainer.style.display = "grid";
+  datesContainer.style.gridTemplateColumns = "repeat(7, 1fr)";
 
-    //Turn the weekdays container into grids of 7 column
-    weekdaysContainer.style.display = "grid";
-    weekdaysContainer.style.gridTemplateColumns = "repeat(7, 1fr)";
+  //Create dynamic calendar where the number of days in a month vary
+  const today = new Date();
+  let month = today.getMonth();
+  let year = today.getFullYear();
 
-    //Create container to hold the dates/rectangular girds
-    const datesContainer = document.createElement("div");
-    datesContainer.id = "dates-container";
-    calendarContainer.append(datesContainer);
+  //Display the month and yar of the calendar as per current selection
+  calendarHeading.textContent = `${today.toLocaleString("default", {
+    month: "long",
+  })} ${year}`;
 
-    //Turn the container for dates into grids of 7 column
-    datesContainer.style.display = "grid";
-    datesContainer.style.gridTemplateColumns = "repeat(7, 1fr)";
+  //Create a function to render a calendar as years and months change
+  async function calendarBuilder(year, month) {
+    //Empty the dates container before re-rendering the calendar
+    datesContainer.innerHTML = "";
 
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
 
-    //Create dynamic calendar where the number of days in a month vary
-    const today = new Date();
-    let month = today.getMonth();
-    let year = today.getFullYear();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    //Display the month and yar of the calendar as per current selection
-    calendarHeading.textContent = `${today.toLocaleString("default", {month: "long"})} ${year}`;
+    let firstDayInMonth = new Date(year, month, 1).getDay();
 
-    //Create a function to render a calendar as years and months change
-    async function calendarBuilder(year, month) {
+    //Make Monday start of the weekdays by modifying the indexes for days
+    firstDayInMonth = (firstDayInMonth + 6) % 7;
 
-        //Empty the dates container before re-rendering the calendar
-        datesContainer.innerHTML = "";
+    //Clear the previous container
+    datesContainer.innerHTML = "";
 
-        const monthNames = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-        ];
-
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        let firstDayInMonth = new Date(year, month, 1).getDay();
-        
-        //Make Monday start of the weekdays by modifying the indexes for days
-        firstDayInMonth = (firstDayInMonth + 6) % 7;
-
-        //Clear the previous container
-        datesContainer.innerHTML = "";
-
-        //align first day of month to the exact weekday it falls into
-        for (let i = 0; i < firstDayInMonth; i++) {
-            const emptyCell1 = document.createElement("div");
-            datesContainer.append(emptyCell1)
-            emptyCell1.style.backgroundColor = "#e2e5e7ff";
-            //Outline for each empty cell a visible rectangle
-            emptyCell1.style.border = "1px solid black"
-        }
-
-        // Fetch events for the current year
-        const events = await processEventsForCalendar(year);
-
-        //Loop through each day of the month
-        for (let i = 1; i <= daysInMonth; i++) {
-            const date = document.createElement("div");
-            date.textContent = i;
-            datesContainer.append(date);
-        
-        // Check if there are any events for this day
-        const event = events.find(event => event.date === i && event.monthName === monthNames[month]);
-            // If an event is found, highlight the date
-            if (event) {
-                date.style.backgroundColor = "lightblue";
-                // Add a tooltip with the event name
-                date.title = event.name
-            }
-
-            //Make the outline of each cell a vidible rectangle
-            date.style.border = "1px solid black"
-        }
-
-        //Outline the empty gills into visible rectangle once a month ends
-        const totalRectangles = firstDayInMonth +daysInMonth;
-        
-        const emptyCells2 = (7 - (totalRectangles % 7)) % 7;
-
-        for (let i = 0; i < emptyCells2; i++) {
-            const emptyCell2 = document.createElement("div");
-            emptyCell2.style.backgroundColor = "#e2e5e7ff";
-            datesContainer.append(emptyCell2);
-            emptyCell2.style.border = "1px solid black"
-
-        }
+    //align first day of month to the exact weekday it falls into
+    for (let i = 0; i < firstDayInMonth; i++) {
+      const emptyCell1 = document.createElement("div");
+      datesContainer.append(emptyCell1);
+      emptyCell1.style.backgroundColor = "#e2e5e7ff";
+      //Outline for each empty cell a visible rectangle
+      emptyCell1.style.border = "1px solid black";
     }
 
-    //create previous button to take the user to the previous month of the particular year
-    const previousBtn = document.createElement("button");
-    previousBtn.textContent = "Previous";
-    calendarContainer.append(previousBtn);
+    // Fetch events for the current year
+    const events = await processEventsForCalendar(year);
 
-    //create next button to take the user to the following month of the particular year
-    const nextBtn = document.createElement("button");
-    nextBtn.textContent = "Next";
-    calendarContainer.append(nextBtn);
+    //Loop through each day of the month
+    for (let i = 1; i <= daysInMonth; i++) {
+      const date = document.createElement("div");
+      date.textContent = i;
+      datesContainer.append(date);
 
-    //Create the dropdown functionality
-    createDropdown(rootContainer, datesContainer, calendarBuilder);
+      // Check if there are any events for this day
+      const event = events.find(
+        (event) => event.date === i && event.monthName === monthNames[month]
+      );
+      // If an event is found, highlight the date
+      if (event) {
+        date.style.backgroundColor = "lightblue";
+        // Add a tooltip with the event name
+        date.textContent = `${event.name}`;
+      }
 
-    //Show current calendar - current year and current month
-    calendarBuilder(year,month)
+      //Make the outline of each cell a vidible rectangle
+      date.style.border = "1px solid black";
+    }
 
-    //Add event listener to take user to the previous month when "Previous" button is clicked
-    previousBtn.addEventListener("click", () => {
-        datesContainer.innerHTML = "";
-        month = month - 1;
-        if (month < 0) {
-            month = 11;
-            year = year - 1
-        }
-        calendarBuilder(year, month);
-        calendarHeading.textContent = `${new Date(year, month).toLocaleString("default", {month: "long"})} ${year}`;
+    //Outline the empty gills into visible rectangle once a month ends
+    const totalRectangles = firstDayInMonth + daysInMonth;
 
-         //Sync month selector to reflect the correct month when user clicks "Previous"
-        const monthNavSync = document.getElementById("month-select");
-        monthNavSync.value = month;
+    const emptyCells2 = (7 - (totalRectangles % 7)) % 7;
 
-        //Sync year selector to reflect the correct year when user clicks "Previous"
-        const yearNavSync = document.getElementById("year-select");
-        yearNavSync.value = year;
-    });
+    for (let i = 0; i < emptyCells2; i++) {
+      const emptyCell2 = document.createElement("div");
+      emptyCell2.style.backgroundColor = "#e2e5e7ff";
+      datesContainer.append(emptyCell2);
+      emptyCell2.style.border = "1px solid black";
+    }
+  }
 
+  //create previous button to take the user to the previous month of the particular year
+  const previousBtn = document.createElement("button");
+  previousBtn.textContent = "Previous";
+  calendarContainer.append(previousBtn);
 
-    //Add event listener to take user to the following month when "Next" button is clicked
-    nextBtn.addEventListener("click", () => {
-        datesContainer.innerHTML = "";
-        month = month + 1;
-        if (month > 11) {
-            month = 0;
-            year = year + 1;
-        }
-        calendarBuilder(year, month);
-        calendarHeading.textContent = `${new Date(year, month).toLocaleString("default", {month: "long"})} ${year}`;
+  //create next button to take the user to the following month of the particular year
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = "Next";
+  calendarContainer.append(nextBtn);
 
-        //Sync month selector to reflect the correct month when user clicks "Next"
-        const monthNavSync = document.getElementById("month-select");
-        monthNavSync.value = month;
+  //Create the dropdown functionality
+  createDropdown(rootContainer, datesContainer, calendarBuilder);
 
-        //Sync year selector to reflect the correct year when user clicks "Next"
-        const yearNavSync = document.getElementById("year-select");
-        yearNavSync.value = year;
+  //Show current calendar - current year and current month
+  calendarBuilder(year, month);
 
-    });
+  //Add event listener to take user to the previous month when "Previous" button is clicked
+  previousBtn.addEventListener("click", () => {
+    datesContainer.innerHTML = "";
+    month = month - 1;
+    if (month < 0) {
+      month = 11;
+      year = year - 1;
+    }
+    calendarBuilder(year, month);
+    calendarHeading.textContent = `${new Date(year, month).toLocaleString(
+      "default",
+      { month: "long" }
+    )} ${year}`;
 
-    //Syn the calendar heading to reflect the correct month and year as the user clicks the jump button
-    const monthMenu = document.getElementById("month-select");
-    const yearhMenu = document.getElementById("year-select");
-    const jumpbtn = document.getElementById("jump-button");
+    //Sync month selector to reflect the correct month when user clicks "Previous"
+    const monthNavSync = document.getElementById("month-select");
+    monthNavSync.value = month;
 
-    jumpbtn.addEventListener("click", () => {
-        datesContainer.innerHTML = "";
-        year = Number(yearhMenu.value);
-        month = Number(monthMenu.value);
-        calendarBuilder(year, month);
-        calendarHeading.textContent = `${new Date(year, month).toLocaleString("default", {month: "long"})} ${year}`;
+    //Sync year selector to reflect the correct year when user clicks "Previous"
+    const yearNavSync = document.getElementById("year-select");
+    yearNavSync.value = year;
+  });
 
+  //Add event listener to take user to the following month when "Next" button is clicked
+  nextBtn.addEventListener("click", () => {
+    datesContainer.innerHTML = "";
+    month = month + 1;
+    if (month > 11) {
+      month = 0;
+      year = year + 1;
+    }
+    calendarBuilder(year, month);
+    calendarHeading.textContent = `${new Date(year, month).toLocaleString(
+      "default",
+      { month: "long" }
+    )} ${year}`;
 
-    })
+    //Sync month selector to reflect the correct month when user clicks "Next"
+    const monthNavSync = document.getElementById("month-select");
+    monthNavSync.value = month;
 
+    //Sync year selector to reflect the correct year when user clicks "Next"
+    const yearNavSync = document.getElementById("year-select");
+    yearNavSync.value = year;
+  });
 
-}
+  //Syn the calendar heading to reflect the correct month and year as the user clicks the jump button
+  const monthMenu = document.getElementById("month-select");
+  const yearhMenu = document.getElementById("year-select");
+  const jumpbtn = document.getElementById("jump-button");
+
+  jumpbtn.addEventListener("click", () => {
+    datesContainer.innerHTML = "";
+    year = Number(yearhMenu.value);
+    month = Number(monthMenu.value);
+    calendarBuilder(year, month);
+    calendarHeading.textContent = `${new Date(year, month).toLocaleString(
+      "default",
+      { month: "long" }
+    )} ${year}`;
+  });
+};

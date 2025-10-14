@@ -1,4 +1,4 @@
-//Cache to avoid fetching the calendar events multiple times and reduce network requests
+// Cache to avoid fetching the calendar events multiple times and reduce network requests
 let data = null;
 
 const monthNames = [
@@ -18,9 +18,10 @@ const monthNames = [
 
 // Fetch the JSON data
 async function loadDays() {
-    if (data) {
-        return data; 
-    }
+  // If data is already loaded, return it to avoid extra network requests
+  if (data) {
+    return data;
+  }
   try {
     const response = await fetch("./days.json");
     // Throw an error if the response is not ok
@@ -35,16 +36,13 @@ async function loadDays() {
   return data;
 }
 
-loadDays();
-
 // Map the month name to its corresponding index (0 for January, 1 for February, etc.)
 function getMonthIndex(monthName) {
   return monthNames.indexOf(monthName);
 }
 
-//Match an event occurrence to the corresponding calendar date for a month and year.
+// Match an event occurrence to the corresponding calendar date for a month and year.
 function getEventDate(year, monthName, dayName, occurrence) {
-
   // Convert the month name to index
   const monthIndex = getMonthIndex(monthName);
 
@@ -67,7 +65,7 @@ function getEventDate(year, monthName, dayName, occurrence) {
     // Find the matching day
     const date = new Date(year, monthIndex, day);
     if (date.getDay() === dayIndex) {
-      // Push the dates taht match the day name to the dates array
+      // Push the dates that match the day name to the dates array
       dates.push(day);
     }
   }
@@ -84,33 +82,14 @@ function getEventDate(year, monthName, dayName, occurrence) {
 
 // Get all the events and return them with their new calculated dates
 export async function processEventsForCalendar(year) {
-<<<<<<< Updated upstream
-    // Make sure the data is loaded
-    if (!data) {
-        await loadDays();
-    }
+  // Make sure the data is loaded
+  if (!data) {
+    await loadDays();
+  }
 
-    //An array to store the vents with their calculated dates
-    const eventsWithDates = data.map(event => {
-        const eventDate = getEventDate(year, event.monthName, event.dayName, event.occurrence);
-        return {
-            // Copy all the the original event properties using spread operator into the new object
-            ...event, 
-            // Add teh new calculated date value to the new date property also
-            date: eventDate
-        };
-    });
-
-    return eventsWithDates
-}
-=======
-
-  const data = await loadDays();
-
-  // Make sure the data is loaded correctly
+  // If no data is found, return an empty array to avoid errors
   if (!data || data.length === 0) {
     console.warn("No events found in days.json");
-    // If no data is found, return an empty array to avoid errors
     return [];
   }
 
@@ -144,11 +123,12 @@ export async function processEventsForCalendar(year) {
   // Validate each event and filter out the invalid ones
   const validEvents = data.filter((event) => {
     if (!event.name) {
+      // Example output: Missing name. Expected format: "name": "Event Name". Event: (event object)
       console.error("Missing name:", event);
       return false;
     }
     if (!event.monthName || !validMonths.includes(event.monthName)) {
-        // Example output: Invalid monthName "Jan". Expected one of: January, February, March, April, May, June, July, August, September, October, November, December. Event: (event object)"
+      // Example output: Invalid monthName "Jan". Expected one of: January, February, March, April, May, June, July, August, September, October, November, December. Event: (event object)
       console.error(
         `Invalid monthName "${
           event.monthName
@@ -158,9 +138,8 @@ export async function processEventsForCalendar(year) {
       // Return false so that this event is filtered out and the calendar can generate without errors
       return false;
     }
-
     if (!event.dayName || !validDays.includes(event.dayName)) {
-      // Example output: "Invalid dayName "Mon". Expected one of: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday. Event: (event object)"
+      // Example output: Invalid dayName "Mon". Expected one of: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday. Event: (event object)
       console.error(
         `Invalid dayName "${event.dayName}". Expected one of: ${validDays.join(
           ", "
@@ -171,7 +150,7 @@ export async function processEventsForCalendar(year) {
       return false;
     }
     if (!event.occurrence || !validOccurrences.includes(event.occurrence)) {
-      // Example output: "Invalid occurrence "2nd". Expected one of: first, second, third, fourth, last. Event: (event object)"
+      // Example output: Invalid occurrence "2nd". Expected one of: first, second, third, fourth, last. Event: (event object)
       console.error(
         `Invalid occurrence "${
           event.occurrence
@@ -182,6 +161,7 @@ export async function processEventsForCalendar(year) {
       return false;
     }
     if (!event.descriptionURL) {
+      // Example output: Missing descriptionURL. Expected format: "descriptionURL": "https://example.com". Event: (event object)
       console.error("Missing descriptionURL:", event);
       return false;
     }
@@ -196,18 +176,13 @@ export async function processEventsForCalendar(year) {
       event.dayName,
       event.occurrence
     );
-    return { ...event, date: eventDate };
+    return {
+      // Copy all the original event properties using spread operator into the new object
+      ...event,
+      // Add the new calculated date value to the new date property also
+      date: eventDate,
+    };
   });
 
   return eventsWithDates;
 }
-
-
-
-
-
-
-
-
-
->>>>>>> Stashed changes

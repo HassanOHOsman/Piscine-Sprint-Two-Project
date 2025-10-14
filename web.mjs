@@ -5,10 +5,10 @@
 
 
 import { createDropdown } from "./dropdown.mjs";
-import daysData from "./days.json" with { type: "json" };
+import { processEventsForCalendar } from "../populate-calendar.mjs";
 
 window.onload = function() {
-    
+
     //Create the root container to hold the entire page content
     const rootContainer = document.createElement("div");
     rootContainer.id = "root-container";
@@ -62,7 +62,12 @@ window.onload = function() {
     calendarHeading.textContent = `${today.toLocaleString("default", {month: "long"})} ${year}`;
 
     //Create a function to render a calendar as years and months change
-    function calendarBuilder(year, month) {
+    async function calendarBuilder(year, month) {
+
+        const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+        ];
 
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
@@ -71,20 +76,35 @@ window.onload = function() {
         //Make Monday start of the weekdays by modifying the indexes for days
         firstDayInMonth = (firstDayInMonth + 6) % 7;
 
+        //Clear the previous container
+        datesContainer.innerHTML = "";
+
         //align first day of month to the exact weekday it falls into
         for (let i = 0; i < firstDayInMonth; i++) {
             const emptyCell1 = document.createElement("div");
             datesContainer.append(emptyCell1)
-
+            emptyCell1.style.backgroundColor = "#e2e5e7ff";
             //Outline for each empty cell a visible rectangle
             emptyCell1.style.border = "1px solid black"
         }
+
+        // Fetch events for the current year
+        const events = await processEventsForCalendar(year);
 
         //Loop through each day of the month
         for (let i = 1; i <= daysInMonth; i++) {
             const date = document.createElement("div");
             date.textContent = i;
             datesContainer.append(date);
+        
+        // Check if there are any events for this day
+        const event = events.find(event => event.date === i && event.monthName === monthNames[month]);
+            // If an event is found, highlight the date
+            if (event) {
+                date.style.backgroundColor = "lightblue";
+                // Add a tooltip with the event name
+                date.title = event.name
+            }
 
             //Make the outline of each cell a vidible rectangle
             date.style.border = "1px solid black"
@@ -97,6 +117,7 @@ window.onload = function() {
 
         for (let i = 0; i < emptyCells2; i++) {
             const emptyCell2 = document.createElement("div");
+            emptyCell2.style.backgroundColor = "#e2e5e7ff";
             datesContainer.append(emptyCell2);
             emptyCell2.style.border = "1px solid black"
 

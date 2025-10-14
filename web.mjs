@@ -64,6 +64,9 @@ window.onload = function() {
     //Create a function to render a calendar as years and months change
     async function calendarBuilder(year, month) {
 
+        //Empty the dates container before re-rendering the calendar
+        datesContainer.innerHTML = "";
+
         const monthNames = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"

@@ -1,3 +1,7 @@
+import fs from 'fs/promises';
+import { getEventDate } from './populate-calendar.mjs';
+
+
 async function readDaysJson() {
     console.log('Reading days.json...');
     try {

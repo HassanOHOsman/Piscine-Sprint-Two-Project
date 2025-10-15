@@ -1,8 +1,59 @@
-// This is a placeholder file which shows how you can access functions and data defined in other files. You can delete the contents of the file once you have understood how it works.
-// It can be run with `node`.
-
-import { processEventsForCalendar, getEventDate } from "./populate-calendar.mjs";
+// This file generates an iCal file with events from days.json for the years 2020-2030
+import { processEventsForCalendar } from "./populate-calendar.mjs";
 import daysData from "./days.json" with { type: "json" };
 import { writeFile } from "node:fs/promises";
 
+const monthNames = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
 
+// Generate all events for from 2020 to 2030, inclusive
+export async function generateEventsForYears(startYear = 2020, endYear = 2030) {
+  let allEvents = [];
+
+  for (let year = startYear; year <= endYear; year++) {
+    const events = await processEventsForCalendar(year);
+
+    allEvents.push(...events.map(e => ({ ...e, year })));
+  }
+
+  return allEvents;
+}
+
+// Create the iCal file
+export async function createICalFile(filename = "days.ics") {
+  const events = await generateEventsForYears();
+
+  let icalContent = `BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+`;
+
+  for (const event of events) {
+    const monthIndex = monthNames.indexOf(event.monthName) + 1; 
+    const day = String(event.date).padStart(2, "0");
+    const month = String(monthIndex).padStart(2, "0");
+    const year = event.year;
+
+    const dtEndDate = new Date(year, monthIndex - 1, event.date + 1);
+    const endDay = String(dtEndDate.getDate()).padStart(2, "0");
+    const endMonth = String(dtEndDate.getMonth() + 1).padStart(2, "0");
+    const endYear = dtEndDate.getFullYear();
+
+    icalContent += `BEGIN:VEVENT
+SUMMARY:${event.name}
+DTSTART;VALUE=DATE:${year}${month}${day}
+DTEND;VALUE=DATE:${endYear}${endMonth}${endDay}
+END:VEVENT
+`;
+  }
+
+  icalContent += "END:VCALENDAR";
+
+  await writeFile(filename, icalContent);
+  console.log(`iCal file "${filename}" created with ${events.length} events.`);
+}
+
+
+createICalFile();

@@ -103,6 +103,7 @@ PRODID:-//Piscine-Sprint-Two-Project/Days-Calendar/EN
 ${events} 
 END:VCALENDAR
         `;
+        //The fs.writeFile method is used to write the icsContent string to a file named days.ics
         await fs.writeFile('./days.ics', icsContent, 'utf-8');
         console.log('iCal file written successfully.');
     } catch (error) {

@@ -15,9 +15,9 @@ async function readDaysJson() {
     }
 }
 
-function generateEventDates() {
+async function generateEventDates() {
     console.log('generateEventDates function called');
-    const daysData = readDaysJson(); 
+    const daysData = await readDaysJson(); 
     console.log('Days data:', daysData);
 
     let events = "";

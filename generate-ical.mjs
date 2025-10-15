@@ -57,3 +57,4 @@ END:VEVENT
     }
     return events;
 }
+generateEventDates()

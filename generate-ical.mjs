@@ -57,7 +57,10 @@ END:VEVENT
     }
     return events;
 }
+
 (async () => {
+    console.log('Starting iCal generation...');
+    try {
         const events = await generateEventDates();
         const icsContent = `
 BEGIN:VCALENDAR
@@ -66,6 +69,9 @@ PRODID:-//Piscine-Sprint-Two-Project/Days-Calendar/EN
 ${events} 
 END:VCALENDAR
         `;
-        fs.writeFile('./days.ics', icsContent, 'utf-8');
-    } 
+        await fs.writeFile('./days.ics', icsContent, 'utf-8');
+        console.log('iCal file written successfully.');
+    } catch (error) {
+        console.error('An error occurred during iCal generation:', error);
+    }
 })();

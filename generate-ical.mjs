@@ -57,4 +57,15 @@ END:VEVENT
     }
     return events;
 }
-generateEventDates()
+(async () => {
+        const events = await generateEventDates();
+        const icsContent = `
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Piscine-Sprint-Two-Project/Days-Calendar/EN
+${events} 
+END:VCALENDAR
+        `;
+        fs.writeFile('./days.ics', icsContent, 'utf-8');
+    } 
+})();

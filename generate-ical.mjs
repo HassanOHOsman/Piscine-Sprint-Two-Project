@@ -1,7 +1,12 @@
-// This is a placeholder file which shows how you can access functions and data defined in other files. You can delete the contents of the file once you have understood how it works.
-// It can be run with `node`.
-
-import { getGreeting } from "./common.mjs";
-import daysData from "./days.json" with { type: "json" };
-
-console.log(`{getGreeting()} - there are ${daysData.length} known days`);
+async function readDaysJson() {
+    console.log('Reading days.json...');
+    try {
+        const fileContents = await fs.readFile('./days.json', 'utf-8');
+        console.log('File contents:', fileContents);
+        
+        return JSON.parse(fileContents);
+    } catch (error) {
+        console.error('Failed to read days.json:', error);
+        return [];
+    }
+}

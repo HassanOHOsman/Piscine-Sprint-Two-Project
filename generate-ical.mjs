@@ -1,3 +1,25 @@
+// Workaround to allow node able to access days.json, even while using fetch()
+global.fetch = async (path) => {
+  if (path.startsWith("./")) {
+    const { readFile } = await import("node:fs/promises");
+    const { fileURLToPath } = await import("node:url");
+    const { dirname, resolve } = await import("node:path");
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    const fullPath = resolve(__dirname, path);
+    const data = await readFile(fullPath, "utf8");
+    return {
+      async json() {
+        return JSON.parse(data);
+      }
+    };
+  } else {
+    const originalFetch = (await import("node-fetch")).default;
+    return originalFetch(path);
+  }
+};
+
+
+
 // This file generates an iCal file with events from days.json for the years 2020-2030
 import { processEventsForCalendar } from "./populate-calendar.mjs";
 import daysData from "./days.json" with { type: "json" };
@@ -14,7 +36,7 @@ export async function generateEventsForYears(startYear = 2020, endYear = 2030) {
 
   for (let year = startYear; year <= endYear; year++) {
     const events = await processEventsForCalendar(year);
-
+    console.log(year, events);
     allEvents.push(...events.map(e => ({ ...e, year })));
   }
 

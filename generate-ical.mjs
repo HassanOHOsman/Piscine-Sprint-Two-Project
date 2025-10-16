@@ -133,6 +133,7 @@ async function generateEventDates() {
         const icsLines = [
             'BEGIN:VCALENDAR',
             'VERSION:2.0',
+            `PRODID:-//Piscine Sprint Two Project//Days Calendar//EN`,
             'CALSCALE:GREGORIAN',
             events.trim(), // Remove trailing \r\n from the last event
             'END:VCALENDAR'

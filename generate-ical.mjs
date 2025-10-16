@@ -31,55 +31,89 @@ function formatDate(date) {
     return `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
 }
 
-// Helper function to process a single event
+// Helper function to generate UID (RFC-compliant and consistent)
+function generateUID(name, date) {
+    const slug = name.toLowerCase().replace(/\s+/g, '-');
+    return `${slug}-${date}@piscine-project.local`;
+}
+
+// Helper to get current timestamp in UTC format: YYYYMMDDTHHMMSSZ (RFC-compliant and consistent)
+function getDTStamp() {
+  const now = new Date();
+  // e.g. 20251016T123456Z
+  const yyyy = now.getUTCFullYear();
+  const mm = String(now.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(now.getUTCDate()).padStart(2, '0');
+  const hh = String(now.getUTCHours()).padStart(2, '0');
+  const mi = String(now.getUTCMinutes()).padStart(2, '0');
+  const ss = String(now.getUTCSeconds()).padStart(2, '0');
+  return `${yyyy}${mm}${dd}T${hh}${mi}${ss}Z`;
+}
+
+// Process a single event
 function processEvent(event, year) {
-    // Get the index of the event's month name from the array of month names,
-    const monthIndex = [
+    const monthNames = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
-    ].indexOf(event.monthName);
+    ];
 
-    // The getEventDate function from populate-calendar.mjs is used to calculate the exact date in the month of the event
+    // Validate the monthName
+    const monthIndex = monthNames.indexOf(event.monthName);
+   // If the monthName is invalid, log an error and throw an exception
+   if (monthIndex < 0) {
+    console.error(`Invalid monthName: ${event.monthName}`);
+    throw new Error(`Invalid monthName: ${event.monthName}`);
+    }
+
+    // Use the getEventDate function from populate-calendar.mjs to calculate the exact date in the month of the event
     const dayOfMonth = getEventDate(year, event.monthName, event.dayName, event.occurrence);
-    // A date object is created for the event using the year, month index and day of the month
-    const eventDate = new Date(year, monthIndex, dayOfMonth);
-    // Use the formatDate function to format the start date
-    const formattedStartDate = formatDate(eventDate);
-
-    // To set the end date first create a copy of the eventDate object
-    const endDate = new Date(eventDate);
-    // Set the end date by adding one day to the eventDate date as the iCal format uses all-day events in this way
+    // Create a date object for the event using the year, month index and day of the month
+    const startDate = new Date(year, monthIndex, dayOfMonth);
+    // To set the end date first create a copy of the startDate object
+    const endDate = new Date(startDate);
+    // Set the end date by adding one day to the startDate date as the iCal format uses all-day events in this way
     endDate.setDate(endDate.getDate() + 1);
-    // Use the formatDate function to format the end date
-    const formattedEndDate = formatDate(endDate);
 
-    // Return the formatted VEVENT string
-    return `BEGIN:VEVENT\nSUMMARY:${event.name}\nDTSTART;VALUE=DATE:${formattedStartDate}\nDTEND;VALUE=DATE:${formattedEndDate}\nDESCRIPTION:${event.descriptionURL}\nEND:VEVENT\n`;
+    // Use the helper function to format the start and end dates
+    const formattedDTStart = formatDate(startDate);
+    const formattedDTEnd = formatDate(endDate);
+    // Use helper functions to generate UID and DTSTAMP for validation purposes
+    const uid = generateUID(event.name, formattedDTStart);
+    const dtstamp = getDTStamp();
+
+    // Construct VEVENT using proper CRLF (Carriage Return + Line Feed) line endings
+    const veventLines = [
+        'BEGIN:VEVENT',
+        `UID:${uid}`,
+        `DTSTAMP:${dtstamp}`,
+        `SUMMARY:${event.name}`,
+        `DTSTART;VALUE=DATE:${formattedDTStart}`,
+        `DTEND;VALUE=DATE:${formattedDTEnd}`,
+        'END:VEVENT'
+    ];
+
+    // Join the lines with CRLF and return the VEVENT string
+    return veventLines.join('\r\n') + '\r\n';
 }
 
 // The async keyword is needed to make this function asynchronous, 
 // which means we can use the 'await' to pause execution until a Promise resolves.
 // This is necessary because the function calls readDaysJson() which is asynchronous.
 async function generateEventDates() {
-    console.log('generateEventDates function called');
-    const daysData = await readDaysJson(); // Read the data directly
-    console.log('Days data:', daysData);
-
-    // The events variable will store the iCal event data as a string,
-    // and each event will be appended to this string in the loop for each year.
-    let events = "";
+    const daysData = await readDaysJson();
+    let events = '';
 
     for (let year = 2020; year <= 2030; year++) {
+        //for each commemorative event in the newly created daysData array we check if it has all the required fields
         for (const event of daysData) {
-            // For each commemorative event in the newly created daysData array we check if it has all the required fields
             if (isValidEvent(event)) {
                 events += processEvent(event, year);
-            } else {  // If any required field is missing, skip the event and log a message
-                console.log('Skipping invalid event:', event);
+            } else { // If any required field is missing, skip the event and log a message
+                console.warn('Skipping invalid event:', event);
             }
         }
     }
-    // After processing all events for all years, return the complete events string
+    // After processing all events, return the complete string of VEVENTs
     return events;
 }
 
@@ -92,49 +126,25 @@ async function generateEventDates() {
 // We use the IIFE to run the asynchronous code at the top level of the script 
 // which is not directly possible in node.js without wrapping it in a function.
 (async () => {
-    console.log('Starting iCal generation...');
     try {
         const events = await generateEventDates();
-        // Build the complete iCal content by wrapping the events content from above in the VCALENDAR structure
-        // using template literals.
-        // The try catch block will catch any errors that occur during the asynchronous operations
-        // such as file reading/writing or JSON parsing and log them to the console.
-        const icsContent = `
-BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Piscine-Sprint-Two-Project/Days-Calendar/EN
-${events} 
-END:VCALENDAR
-        `;
-        //The fs.writeFile method is used to write the icsContent string to a file named days.ics
+
+        // Build the iCal lines with proper CRLF line endings and trim any trailing whitespace
+        const icsLines = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'CALSCALE:GREGORIAN',
+            events.trim(), // Remove trailing \r\n from the last event
+            'END:VCALENDAR'
+        ];
+
+        // Build the final iCal content string
+        const icsContent = icsLines.join('\r\n') + '\r\n';
+
+        // Write the iCal content to a .ics file using fs.promises.writeFile with UTF-8 encoding
         await fs.writeFile('./days.ics', icsContent, 'utf-8');
-        console.log('iCal file written successfully.');
+        console.log('iCal file written successfully as day.ics');
     } catch (error) {
         console.error('An error occurred during iCal generation:', error);
     }
 })();
-// The result is a long string containing all the iCal event entries (for the years 2020-2030 inclusive) that look like this:
-/**
- *
-BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Piscine-Sprint-Two-Project/Days-Calendar/EN
-BEGIN:VEVENT
-SUMMARY:Ada Lovelace Day
-DTSTART;VALUE=DATE:20201013
-DTEND;VALUE=DATE:20201014
-DESCRIPTION:https://codeyourfuture.github.io/The-Piscine/days/ada.txt
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:International Binturong Day
-DTSTART;VALUE=DATE:20200509
-DTEND;VALUE=DATE:20200510
-DESCRIPTION:https://codeyourfuture.github.io/The-Piscine/days/binturongs.txt
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:International Vulture Awareness Day
-DTSTART;VALUE=DATE:20200905
-DTEND;VALUE=DATE:20200906
-DESCRIPTION:https://codeyourfuture.github.io/The-Piscine/days/vultures.txt
-END:VEVENT....(etc,etc)
- */

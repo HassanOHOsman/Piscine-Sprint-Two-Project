@@ -107,6 +107,7 @@ window.onload = function () {
       const date = document.createElement("div");
       date.style.border = "1px solid black";
 
+      //Create container to hold the day number 
       const dayNum = document.createElement("div");
       dayNum.textContent = i;
       date.append(dayNum);

@@ -87,9 +87,6 @@ window.onload = function () {
     //Make Monday start of the weekdays by modifying the indexes for days
     firstDayInMonth = (firstDayInMonth + 6) % 7;
 
-    //Clear the previous container
-    datesContainer.innerHTML = "";
-
     //align first day of month to the exact weekday it falls into
     for (let i = 0; i < firstDayInMonth; i++) {
       const emptyCell1 = document.createElement("div");

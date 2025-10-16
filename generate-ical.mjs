@@ -8,7 +8,7 @@ global.fetch = async (path) => {
     const fullPath = resolve(__dirname, path);
     const data = await readFile(fullPath, "utf8");
     return {
-      ok: true;
+      ok: true,
       status: 200,
       async json() {
         return JSON.parse(data);

@@ -8,8 +8,8 @@ async function readDaysJson() {
     console.log('Reading days.json...');
     try {
         // fs.readFile method reads the entire contents of the days.json asynchronously
-        // The content is returned to the fileContents variable as a string (using the utf-8 encoding)
-        // The result of fs.readFile is assigned to the fileContents variable using 'await'
+        // and the content is returned to the fileContents variable as a string (using the utf-8 encoding).
+        // The result of fs.readFile is assigned to the fileContents variable using 'await'.
         // At this point, fileContents holds the entire contents of the days.json file as a string
         const fileContents = await fs.readFile('./days.json', 'utf-8');
         console.log('File contents:', fileContents);
@@ -21,6 +21,42 @@ async function readDaysJson() {
     }
 }
 
+// Helper function to validate if each commemorative event in the newly created daysData array has all the required fields
+function isValidEvent(event) {
+    return event.name && event.monthName && event.dayName && event.occurrence && event.descriptionURL;
+}
+
+// Helper function to format dates for DTSTART and DTEND in the YYYYMMDD format - with leading zeros where needed
+function formatDate(date) {
+    return `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
+}
+
+// Helper function to process a single event
+function processEvent(event, year) {
+    // Get the index of the event's month name from the array of month names,
+    const monthIndex = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ].indexOf(event.monthName);
+
+    // The getEventDate function from populate-calendar.mjs is used to calculate the exact date in the month of the event
+    const dayOfMonth = getEventDate(year, event.monthName, event.dayName, event.occurrence);
+    // A date object is created for the event using the year, month index and day of the month
+    const eventDate = new Date(year, monthIndex, dayOfMonth);
+    // Use the formatDate function to format the start date
+    const formattedStartDate = formatDate(eventDate);
+
+    // To set the end date first create a copy of the eventDate object
+    const endDate = new Date(eventDate);
+    // Set the end date by adding one day to the eventDate date as the iCal format uses all-day events in this way
+    endDate.setDate(endDate.getDate() + 1);
+    // Use the formatDate function to format the end date
+    const formattedEndDate = formatDate(endDate);
+
+    // Return the formatted VEVENT string
+    return `BEGIN:VEVENT\nSUMMARY:${event.name}\nDTSTART;VALUE=DATE:${formattedStartDate}\nDTEND;VALUE=DATE:${formattedEndDate}\nDESCRIPTION:${event.descriptionURL}\nEND:VEVENT\n`;
+}
+
 // The async keyword is needed to make this function asynchronous, 
 // which means we can use the 'await' to pause execution until a Promise resolves.
 // This is necessary because the function calls readDaysJson() which is asynchronous.
@@ -29,48 +65,15 @@ async function generateEventDates() {
     const daysData = await readDaysJson(); // Read the data directly
     console.log('Days data:', daysData);
 
-    // the events variable will store the iCal event data as a string, 
-    // and each event will be appended to this string in the loop.
+    // The events variable will store the iCal event data as a string,
+    // and each event will be appended to this string in the loop for each year.
     let events = "";
 
     for (let year = 2020; year <= 2030; year++) {
         for (const event of daysData) {
-            // for each commemorative event in the newly created daysData array we check if it has all the required fields
-            if (event.name && event.monthName && event.dayName && event.occurrence && event.descriptionURL) {
-                // the getEventDate function from populate-calendar.mjs is used to calculate the exact date in the month of the event
-                const dayOfMonth = getEventDate(year, event.monthName, event.dayName, event.occurrence);
-
-                // Construct a Date object by finding the index of the event's month name from the array of month names,
-                // which is necessary because the Date constructor requires a month index (0 for January, 1 for February, etc.)
-                const monthIndex = [
-                    "January", "February", "March", "April", "May", "June",
-                    "July", "August", "September", "October", "November", "December"
-                ].indexOf(event.monthName);
-
-                // a date object is created for the event using the year, month index and day of the month
-                const eventDate = new Date(year, monthIndex, dayOfMonth);
-
-                // Use the eventDate variable to create the the start date (DTSTART) which is formatted as YYYYMMDD
-                const formattedStartDate = `${eventDate.getFullYear()}${String(eventDate.getMonth() + 1).padStart(2, '0')}${String(eventDate.getDate()).padStart(2, '0')}`;
-
-                // to set the end date first create a copy of the eventDate object
-                // then set the end date  by adding one day to the eventDate date as the iCal format uses all-day events in this way
-                const endDate = new Date(eventDate);
-                endDate.setDate(endDate.getDate() + 1);
-                //Use the endDate variable to create the the end date (DTEND) which is formatted as YYYYMMDD
-                const formattedEndDate = `${endDate.getFullYear()}${String(endDate.getMonth() + 1).padStart(2, '0')}${String(endDate.getDate()).padStart(2, '0')}`;
-
-                // Create an ical event entry for each event (+= is the shorthand syntax used in appending to a loop)
-                // and append it to the events string using template literals
-                // the fields in the entry are populated using the values of the variables above
-                events += `
-BEGIN:VEVENT
-SUMMARY:${event.name}
-DTSTART;VALUE=DATE:${formattedStartDate}
-DTEND;VALUE=DATE:${formattedEndDate}
-DESCRIPTION:${event.descriptionURL}
-END:VEVENT
-`;
+            // For each commemorative event in the newly created daysData array we check if it has all the required fields
+            if (isValidEvent(event)) {
+                events += processEvent(event, year);
             } else {  // If any required field is missing, skip the event and log a message
                 console.log('Skipping invalid event:', event);
             }
@@ -112,10 +115,26 @@ END:VCALENDAR
 })();
 // The result is a long string containing all the iCal event entries (for the years 2020-2030 inclusive) that look like this:
 /**
- * BEGIN:VEVENT
-    SUMMARY:Ada Lovelace Day
-    DTSTART;VALUE=DATE:20251013
-    DTEND;VALUE=DATE:20251014
-    DESCRIPTION:https://codeyourfuture.github.io/The-Piscine/days/ada.txt
-    END:VEVENT
+ *
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Piscine-Sprint-Two-Project/Days-Calendar/EN
+BEGIN:VEVENT
+SUMMARY:Ada Lovelace Day
+DTSTART;VALUE=DATE:20201013
+DTEND;VALUE=DATE:20201014
+DESCRIPTION:https://codeyourfuture.github.io/The-Piscine/days/ada.txt
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:International Binturong Day
+DTSTART;VALUE=DATE:20200509
+DTEND;VALUE=DATE:20200510
+DESCRIPTION:https://codeyourfuture.github.io/The-Piscine/days/binturongs.txt
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:International Vulture Awareness Day
+DTSTART;VALUE=DATE:20200905
+DTEND;VALUE=DATE:20200906
+DESCRIPTION:https://codeyourfuture.github.io/The-Piscine/days/vultures.txt
+END:VEVENT....(etc,etc)
  */

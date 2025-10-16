@@ -123,10 +123,13 @@ window.onload = function () {
         //Create container to hold the commemorative day name
         const commemorativeDayName = document.createElement("div");
         commemorativeDayName.textContent = event.name;
+        date.append(commemorativeDayName);
       }
 
       //Make the outline of each cell a vidible rectangle
       date.style.border = "1px solid black";
+
+      datesContainer.append(date);
     }
 
     //Outline the empty gills into visible rectangle once a month ends

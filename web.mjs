@@ -105,8 +105,11 @@ window.onload = function () {
     //Loop through each day of the month
     for (let i = 1; i <= daysInMonth; i++) {
       const date = document.createElement("div");
-      date.textContent = i;
-      datesContainer.append(date);
+      date.style.border = "1px solid black";
+
+      const dayNum = document.createElement("div");
+      dayNum.textContent = i;
+      date.append(dayNum);
 
       // Check if there are any events for this day
       const event = events.find(

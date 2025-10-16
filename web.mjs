@@ -119,8 +119,10 @@ window.onload = function () {
       // If an event is found, highlight the date
       if (event) {
         date.style.backgroundColor = "lightblue";
-        // Add a tooltip with the event name
-        date.textContent = `${event.name}`;
+
+        //Create container to hold the commemorative day name
+        const commemorativeDayName = document.createElement("div");
+        commemorativeDayName.textContent = event.name;
       }
 
       //Make the outline of each cell a vidible rectangle

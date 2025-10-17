@@ -87,9 +87,6 @@ window.onload = function () {
     //Make Monday start of the weekdays by modifying the indexes for days
     firstDayInMonth = (firstDayInMonth + 6) % 7;
 
-    //Clear the previous container
-    datesContainer.innerHTML = "";
-
     //align first day of month to the exact weekday it falls into
     for (let i = 0; i < firstDayInMonth; i++) {
       const emptyCell1 = document.createElement("div");
@@ -105,8 +102,12 @@ window.onload = function () {
     //Loop through each day of the month
     for (let i = 1; i <= daysInMonth; i++) {
       const date = document.createElement("div");
-      date.textContent = i;
-      datesContainer.append(date);
+      date.style.border = "1px solid black";
+
+      //Create container to hold the day number 
+      const dayNum = document.createElement("div");
+      dayNum.textContent = i;
+      date.append(dayNum);
 
       // Check if there are any events for this day
       const event = events.find(
@@ -115,12 +116,17 @@ window.onload = function () {
       // If an event is found, highlight the date
       if (event) {
         date.style.backgroundColor = "lightblue";
-        // Add a tooltip with the event name
-        date.textContent = `${event.name}`;
+
+        //Create container to hold the commemorative day name
+        const commemorativeDayName = document.createElement("div");
+        commemorativeDayName.textContent = event.name;
+        date.append(commemorativeDayName);
       }
 
       //Make the outline of each cell a vidible rectangle
       date.style.border = "1px solid black";
+
+      datesContainer.append(date);
     }
 
     //Outline the empty gills into visible rectangle once a month ends
